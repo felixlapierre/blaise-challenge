@@ -25,40 +25,8 @@ function App() {
     let person1 = [passengers[0].lat, passengers[0].lon];
     let person2 = [passengers[1].lat, passengers[1].lon];
 
-    let data = {
-        "type": "FeatureCollection",
-        "features": [
-            {
-                "type": "Feature",
-                "properties": {
-                    "stroke": "#f06292",
-                    "stroke-width": 15,
-                    "stroke-opacity": 1,
-                    "line-join": "round",
-                    "line-cap": "round"
-                },
-                "geometry": {
-                    "type": "LineString",
-                    "coordinates": [person1, person2]
-                }
-            }
-        ]
-    }
-
-    const dataLayer = {
-        'id': 'route2',
-        'type': 'line',
-        'layout': {
-            'line-join': 'round',
-            'line-cap': 'round'
-        },
-        'paint': {
-            'line-color': '#0000ff',
-            'line-width': 8
-        }
-    }
-
     const markers = [];
+    const lines = [];
     passengers.forEach(passenger => {
         //Find the nearest bus stop
         let minDistance = Number.MAX_VALUE;
@@ -70,6 +38,10 @@ function App() {
                 closestStop = stop;
             }
         })
+        const point1 = [passenger.lat, passenger.lon];
+        const point2 = [closestStop.lat, closestStop.lon];
+
+        lines.push(<Polyline points={[point1, point2]}/>)
         console.log(closestStop);
 
         markers.push(
@@ -86,33 +58,9 @@ function App() {
     return (<ReactMapGL {...viewPort}
         onViewportChange={setViewport}
         mapboxApiAccessToken={mapboxAccessToken}
-        onLoad={function () {
-            if (!this.map) return;
-            const map = this.map.getMap();
-            map.addSource('route', {
-                'type': 'geojson',
-                'data': data
-            })
-            map.addLayer({
-                'id': 'route',
-                'type': 'line',
-                'source': 'route',
-                'layout': {
-                    'line-join': 'round',
-                    'line-cap': 'round'
-                },
-                'paint': {
-                    'line-color': '#0000ff',
-                    'line-width': 8
-                }
-            })
-        }}
     >
+        {lines}
         {markers}
-        <Source type="geojson" data={data}>
-            <Layer {...dataLayer} />
-        </Source>
-        <Polyline points={[person1, person2]}/>
     </ReactMapGL>);
 }
 

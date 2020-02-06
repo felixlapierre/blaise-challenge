@@ -1,5 +1,6 @@
 import React, {PureComponent} from 'react'
 import {CanvasOverlay} from 'react-map-gl'
+
 export default class Polyline extends PureComponent {
     _redraw ({ width, height, ctx, isDragging, project, unproject }) {
       const { points, color = 'red', lineWidth = 2, renderWhileDragging = true } = this.props

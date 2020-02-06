@@ -5,8 +5,8 @@ function createPassengerMarker() {
         width="26.49px"
         height="28.16px"
         version="1.1"
-        x="0px"
-        y="0px"
+        x="-13.25px"
+        y="-14.08px"
         enable-background="new 0 0 124.189 132.243"
         viewBox="0 0 124.189 132.243">
         <path stroke-width="1.25"
