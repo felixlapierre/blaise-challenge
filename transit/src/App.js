@@ -1,6 +1,6 @@
-import React, { useState, Component } from 'react';
+import React, { Component } from 'react';
 import './App.css';
-import ReactMapGL, { Source, Layer, Marker, Popup } from 'react-map-gl';
+import ReactMapGL, { Marker, Popup } from 'react-map-gl';
 import { createPassengerMarker, createBusStopMarker } from './images/marker';
 import Polyline from './Polyline';
 
@@ -51,6 +51,10 @@ export default class App extends Component {
         const lines = [];
         const stopPassengerCounts = {};
 
+        stops.forEach((stop, i) => {
+            stopPassengerCounts[i] = 0;
+        });
+
         passengers.forEach(passenger => {
             //Find the nearest bus stop
             let minDistance = Number.MAX_VALUE;
@@ -69,11 +73,7 @@ export default class App extends Component {
 
             lines.push(<Polyline points={[point1, point2]} />)
 
-            if (stopPassengerCounts[closestStopIndex]) {
-                stopPassengerCounts[closestStopIndex] += 1;
-            } else {
-                stopPassengerCounts[closestStopIndex] = 1;
-            }
+            stopPassengerCounts[closestStopIndex] = 1;
 
             markers.push(
                 <Marker latitude={passenger.lat}
@@ -81,10 +81,12 @@ export default class App extends Component {
         });
         stops.forEach((stop, i) => {
             markers.push(
-                <div onMouseEnter={() => this.state.popup = { lat: stop.lat, lon: stop.lon, id: i, count: stopPassengerCounts[i] }}
-                    onMouseLeave={() => this.state.popup = null}>
+                <div onMouseEnter={() => {
+                    this.setState({ popup: { lat: stop.lat, lon: stop.lon, id: i, count: stopPassengerCounts[i] } })
+                }}
+                    onMouseLeave={() => this.setState({ popup: null })}>
                     <Marker latitude={stop.lat}
-                        longitude={stop.lon}>{createBusStopMarker()} {stopPassengerCounts[i]}</Marker>
+                        longitude={stop.lon}>{createBusStopMarker()}</Marker>
                 </div>
             )
         })
@@ -99,88 +101,3 @@ export default class App extends Component {
         </ReactMapGL>);
     }
 }
-/*
-function pythagoras(x1, y1, x2, y2) {
-    return Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
-}
-
-function renderPopup() {
-    var { popup } = this.state;
-
-    return popup &&
-        (<Popup
-            tipSize={5}
-            anchor="top"
-            longitude={popup.lon}
-            latitude={popup.lat}
-            closeOnClick={false}
-            onClose={() => this.setState({ popupInfo: null })}
-        >
-            Stop {popup.id} passengers {popup.count}
-        </Popup>)
-}
-
-function App() {
-    const [viewPort, setViewport] = useState({
-        width: 800,
-        height: 600,
-        latitude: 45.5129604703,
-        longitude: -73.5729924601,
-        zoom: 15,
-        popup: null
-    })
-
-    const markers = [];
-    const lines = [];
-    const stopPassengerCounts = {};
-
-    passengers.forEach(passenger => {
-        //Find the nearest bus stop
-        let minDistance = Number.MAX_VALUE;
-        let closestStop = stops[0];
-        let closestStopIndex = 0;
-        stops.forEach((stop, i) => {
-            const distance = pythagoras(passenger.lon, passenger.lat, stop.lon, stop.lat);
-            if (distance < minDistance) {
-                minDistance = distance;
-                closestStop = stop;
-                closestStopIndex = i;
-            }
-        })
-        const point1 = [passenger.lat, passenger.lon];
-        const point2 = [closestStop.lat, closestStop.lon];
-
-        lines.push(<Polyline points={[point1, point2]} />)
-
-        if (stopPassengerCounts[closestStopIndex]) {
-            stopPassengerCounts[closestStopIndex] += 1;
-        } else {
-            stopPassengerCounts[closestStopIndex] = 1;
-        }
-
-        markers.push(
-            <Marker latitude={passenger.lat}
-                longitude={passenger.lon}>{createPassengerMarker()}</Marker>)
-    });
-    stops.forEach((stop, i) => {
-        markers.push(
-            <div onMouseEnter={() => this.state.popup = { lat: stop.lat, lon: stop.lon, id: i, count: stopPassengerCounts[i] }}
-                onMouseLeave={() => this.state.popup = null}>
-                <Marker latitude={stop.lat}
-                    longitude={stop.lon}>{createBusStopMarker()} {stopPassengerCounts[i]}</Marker>
-            </div>
-        )
-    })
-
-    return (<ReactMapGL {...viewPort}
-        onViewportChange={setViewport}
-        mapboxApiAccessToken={mapboxAccessToken}
-    >
-        {lines}
-        {markers}
-        {renderPopup()}
-    </ReactMapGL>);
-}
-
-export default App;
-*/
