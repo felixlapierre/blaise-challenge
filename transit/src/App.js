@@ -73,7 +73,7 @@ export default class App extends Component {
 
             lines.push(<Polyline points={[point1, point2]} />)
 
-            stopPassengerCounts[closestStopIndex] = 1;
+            stopPassengerCounts[closestStopIndex] += 1;
 
             markers.push(
                 <Marker latitude={passenger.lat}
